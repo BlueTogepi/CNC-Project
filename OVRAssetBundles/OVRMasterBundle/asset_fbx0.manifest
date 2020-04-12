@@ -1,0 +1,41 @@
+ManifestFileVersion: 0
+CRC: 1134628535
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 2c1d8cf4d022f5e33a0d7037d48a4d47
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 3274cf94a6ab64b974256afbe771be22
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 20
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
+Assets:
+- Assets/Industrial_Machine_Models/Models/Machine_3.fbx
+- Assets/Models/cnc.fbx
+- Assets/Industrial_Machine_Models/Models/Machine_1.fbx
+- Assets/Oculus/SampleFramework/Usage/SharedAssets/Models/table_01.fbx
+- Assets/FireHydrant_Set/fbx/Hydrant_Pipes2.fbx
+- Assets/Models/lathe tool.fbx
+- Assets/Industrial_Machine_Models/Models/Machine_6.fbx
+Dependencies:
+- D:/Documents/Programming/Unity/CNC Project/OVRAssetBundles/OVRMasterBundle/asset_mat0

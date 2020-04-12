@@ -1,0 +1,37 @@
+ManifestFileVersion: 0
+CRC: 466725530
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6f6b6113b5d9f45e5c2571e446003085
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: f19fbf085e00d23fbc8d6cf7b345590b
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+Assets:
+- Assets/FireHydrant_Set/fbx/FH_Textures1/DefaultMaterial_Normal.png
+- Assets/Industrial_Machine_Models/Textures/Machine_6_MetallicSmoothness.png
+- Assets/Industrial_Machine_Models/Textures/Machine_6_Normal.png
+- Assets/Industrial_Machine_Models/Textures/Machine_1_Normal.png
+- Assets/FireHydrant_Set/fbx/FH_Textures1/DefaultMaterial_Height.png
+- Assets/Industrial_Machine_Models/Textures/Machine_3_Albedo.png
+- Assets/Oculus/SampleFramework/Usage/SharedAssets/Textures/room_atlas_02.png
+- Assets/Industrial_Machine_Models/Textures/Machine_4_Albedo.png
+- Assets/Industrial_Machine_Models/Textures/Machine_3_MetallicSmoothness.png
+- Assets/Industrial_Machine_Models/Textures/Machine_1_MetallicSmoothness.png
+- Assets/FireHydrant_Set/fbx/FH_Textures1/DefaultMaterial_Metallic.png
+- Assets/Oculus/SampleFramework/Usage/SharedAssets/Textures/room_atlas_02_msm.png
+- Assets/Scenes/Main2/Lightmap-0_comp_dir.png
+- Assets/Industrial_Machine_Models/Textures/Machine_3_Normal.png
+- Assets/Oculus/SampleFramework/Usage/SharedAssets/Textures/room_atlas_02_emi.png
+- Assets/Industrial_Machine_Models/Textures/Machine_6_Albedo.png
+- Assets/Industrial_Machine_Models/Textures/Machine_1_Albedo.png
+- Assets/Industrial_Machine_Models/Textures/Machine_4_Normal.png
+- Assets/FireHydrant_Set/fbx/FH_Textures1/DefaultMaterial_Ambient_occlusion.png
+- Assets/FireHydrant_Set/fbx/FH_Textures1/DefaultMaterial_Base_Color.png
+- Assets/Oculus/SampleFramework/Usage/SharedAssets/Textures/room_atlas_02_nml.png
+- Assets/Industrial_Machine_Models/Textures/Machine_4_MetallicSmoothness.png
+Dependencies: []
