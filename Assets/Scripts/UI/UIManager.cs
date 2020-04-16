@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     public TMP_InputField InputObj;
     public CNCTranslator CNCT;
     public CNCController CNCC;
+    public DoorScript Doors;
     public DebugConsole DebugVR;
 
     public TextAsset[] Presets;
@@ -34,7 +35,7 @@ public class UIManager : MonoBehaviour
     }
     public void Key2InputField(string k)
     {
-        if (char.IsDigit(k[0]) || k[0] == '.')
+        if (char.IsDigit(k[0]) || k[0] == '.' || k[0] == '-')
         {
             InputObj.text += k;
         }
@@ -90,5 +91,10 @@ public class UIManager : MonoBehaviour
         print(temp);
         if (DebugVR != null)
             DebugVR.Println(temp);
+    }
+
+    public void DoorAction()
+    {
+        Doors.Action();
     }
 }
