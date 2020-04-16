@@ -19,6 +19,39 @@ public class LatheController : CNCController
         base.Update();
     }
 
+    /*public override void PieceFinished()
+    {
+        if (InstructionQueue.Count == 0)
+        {
+            StopCuttingSound();
+            StopMachineSound();
+
+            CylinderMeshGenerator cmg = Piece.GetComponent<CylinderMeshGenerator>();
+            cmg.FinishCutting();
+            cmg.bladeLeft = null;
+            cmg.bladeRight = null;
+
+            GameObject newPiece = Instantiate(PiecePrefab, Piece.transform.position, Piece.transform.rotation, Piece.transform.parent);
+            Piece.transform.parent = null;
+
+            newPiece.transform.position = Piece.transform.position;
+            newPiece.transform.rotation = Piece.transform.rotation;
+            Piece.transform.position = PieceFinishedPlacement.transform.position;
+            Piece.transform.rotation = PieceFinishedPlacement.transform.rotation;
+
+            newPiece.transform.Find("ORIGIN").position = PieceOrigin.transform.position;
+            PieceOrigin = newPiece.transform.Find("ORIGIN").gameObject;
+
+            Piece = newPiece;
+        }
+    }*/
+
+    public override void RePiece()
+    {
+        Piece.GetComponent<CylinderMeshGenerator>().RePieceMesh();
+        PrintlnWithVR("Piece Mesh Regenerated.");
+    }
+
     protected override void InitializeG02_03(CNCInstructionMotion instr)
     {
         pivot = pieceOriginTransform.TransformDirection(Vector3.Scale(instr.PivotRelPos, scaleVector)) + TargetKnife.transform.position;

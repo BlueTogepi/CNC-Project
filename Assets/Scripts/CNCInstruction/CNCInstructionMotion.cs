@@ -5,8 +5,8 @@ using UnityEngine;
 public class CNCInstructionMotion : CNCInstruction
 {
     public float posX;
-    public float posY;
-    public float posZ;
+    public float posY;              // CNC-based coordination
+    public float posZ;              // CNC-based coordination
     public float posI;
     public float posJ;
     public float posK;
@@ -15,11 +15,11 @@ public class CNCInstructionMotion : CNCInstruction
     {
         get
         {
-            return new Vector3(posX, posZ, posY);
+            return new Vector3(posX, posZ, posY);           // World-based coordination
         }
         set
         {
-            Vector3 target = value;
+            Vector3 target = value;                         // World-based coordination
             posX = target.x;
             posY = target.z;
             posZ = target.y;
@@ -30,11 +30,11 @@ public class CNCInstructionMotion : CNCInstruction
     {
         get
         {
-            return new Vector3(posI, posK, posJ);
+            return new Vector3(posI, posK, posJ);           // World-based coordination
         }
         set
         {
-            Vector3 relPivot = value;
+            Vector3 relPivot = value;                       // World-based coordination
             posI = relPivot.x;
             posJ = relPivot.z;
             posK = relPivot.y;
@@ -43,7 +43,7 @@ public class CNCInstructionMotion : CNCInstruction
 
     public override string ToStringShort()
     {
-        return base.ToString() + string.Format(" (x{0}, y{1}, z{2}) (i{3}, j{4}, k{5})", posX, posY, posZ, posI, posJ, posK);
+        return base.ToStringShort() + string.Format(" (x{0}, y{1}, z{2}) (i{3}, j{4}, k{5})", posX, posY, posZ, posI, posJ, posK);
     }
 
     public override string ToString()

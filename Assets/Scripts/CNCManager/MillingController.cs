@@ -19,6 +19,12 @@ public class MillingController : CNCController
         base.Update();
     }
 
+    public override void RePiece()
+    {
+        Piece.GetComponent<RectangularMeshGenerator>().RePieceMesh();
+        PrintlnWithVR("Piece Mesh Regenerated.");
+    }
+
     protected override void TranslateToNewPos(Vector3 knifeNewPos)
     {
         Vector3 knifeMoveVec = knifeNewPos - TargetKnife.transform.position;

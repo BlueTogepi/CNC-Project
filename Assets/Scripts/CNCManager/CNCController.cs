@@ -7,6 +7,7 @@ public class CNCController : MonoBehaviour
     public GameObject TargetKnife;                          // All knife transformation control in this script should not be relative to the piece (only CNC instructions are relative)
     public GameObject Piece;
     public GameObject PieceOrigin;
+    public GameObject Home;
     public DebugConsole DebugVR;
     public float RapidMoveSpeed = 0.1f;
     public float FeedMoveSpeed = 0.01f;
@@ -14,11 +15,22 @@ public class CNCController : MonoBehaviour
     public float CrudeThreshold = 1e-4f;
     [Tooltip("Exact Threshold for Vector3 Equal Position Checking")]
     public float ExactThreshold = 1e-5f;
-    [Tooltip("Allow spiral motion for G02 and G03")]
+    [Tooltip("Allow spiral motion for G02 and G03 (Circular Motion with different radius)")]
     public bool AllowSpiral = false;
+    /*[Tooltip("Empty GameObject indicating position and rotation for finished piece placement")]
+    public GameObject PieceFinishedPlacement;
+    [Tooltip("This is just for generating a new piece in-game, any transform measurement should be done on 'Piece'")]
+    public GameObject PiecePrefab;*/
+
+    public ParticleSystem Particles;
+    public AudioSource MachineSound;
+    public AudioSource CuttingSound;
 
     [HideInInspector]
     public Queue<CNCInstruction> InstructionQueue;
+
+    protected Vector3 PieceInitialPosition;
+    protected Quaternion PieceInitialRotation;
 
     protected int gCode;                                      // Current g-code
     protected bool isStartingTask;                            // True for the first frame entering a g-code task
@@ -50,6 +62,9 @@ public class CNCController : MonoBehaviour
 
         maxDistanceRapid = RapidMoveSpeed * Time.deltaTime;
         maxDistanceFeed = FeedMoveSpeed * Time.deltaTime;
+
+        PieceInitialPosition = pieceTransform.position;
+        PieceInitialRotation = pieceTransform.rotation;
     }
 
     // Update is called once per frame
@@ -57,9 +72,18 @@ public class CNCController : MonoBehaviour
     {
         if (InstructionQueue.Count != 0)
         {
+            PlayMachineSound();
+
             CNCInstruction instr = InstructionQueue.Peek();
             if (isStartingTask)
+            {
                 PrintInstruction();
+                if (NeedsCuttingFX(instr.G))
+                {
+                    PlayCuttingSound();
+                    PlayParticlesFX();
+                }
+            }
 
             ReadInstruction(instr);
 
@@ -69,9 +93,48 @@ public class CNCController : MonoBehaviour
                 InstructionQueue.Dequeue();
                 isFinishedTask = false;
                 isStartingTask = true;
+
+                if (InstructionQueue.Count != 0)
+                {
+                    if (!NeedsCuttingFX(InstructionQueue.Peek().G))
+                    {
+                        StopCuttingSound();
+                        StopParticlesFX();
+                    }
+                }
+                else
+                {
+                    StopCuttingSound();
+                    StopParticlesFX();
+                }
             }
         }
+        else
+        {
+            StopMachineSound();
+            StopCuttingSound();
+            StopParticlesFX();
+        }
     }
+
+    #region Piece Control
+
+    /*public virtual void PieceStartActive()
+    {
+        print("Not implemented");
+    }
+
+    public virtual void PieceFinished()
+    {
+        print("Not implemented");
+    }*/
+
+    public virtual void RePiece()
+    {
+        print("Base class CNCController can't RePiece().");
+    }
+
+    #endregion
 
     #region Main
 
@@ -137,6 +200,58 @@ public class CNCController : MonoBehaviour
 
         if (IsAtTarget(target))
             isFinishedTask = true;
+    }
+
+    #endregion
+
+    #region Home
+
+    public void SetHome()
+    {
+        Vector3 newHome = TargetKnife.transform.position;
+        Home.transform.position = newHome;
+        newHome = pieceOriginTransform.InverseTransformPoint(newHome);
+        newHome = new Vector3(newHome.x, newHome.z, newHome.y) * 1000;
+        PrintlnWithVR("Home set at " + VectorToStringLong(newHome));
+    }
+
+    public virtual void GetBackHome()
+    {
+        if (InstructionQueue.Count == 0)
+        {
+            CNCInstructionMotion tempInstr1 = new CNCInstructionMotion
+            {
+                G = 0,
+                Group = 1,
+                prefixModifier = 0.001f,
+                FeedRate = 0,
+                SpindleSpeed = 0,
+                Tool = 1,
+                MiscFunc = 0
+            };
+            Vector3 tempPos1 = PieceOrigin.transform.InverseTransformPoint(new Vector3(TargetKnife.transform.position.x, Home.transform.position.y, TargetKnife.transform.position.z)) * 1000f;
+            tempInstr1.TargetPos = new Vector3(tempPos1.x, tempPos1.y, tempPos1.z);
+            tempInstr1.PivotRelPos = Vector3.zero;
+
+            CNCInstructionMotion tempInstr2 = new CNCInstructionMotion
+            {
+                G = 0,
+                Group = 1,
+                prefixModifier = 0.001f,
+                FeedRate = 0,
+                SpindleSpeed = 0,
+                Tool = 1,
+                MiscFunc = 0
+            };
+            Vector3 tempPos2 = PieceOrigin.transform.InverseTransformPoint(new Vector3(Home.transform.position.x, Home.transform.position.y, Home.transform.position.z)) * 1000f;
+            tempInstr2.TargetPos = new Vector3(tempPos2.x, tempPos2.y, tempPos2.z);
+            tempInstr2.PivotRelPos = Vector3.zero;
+
+            InstructionQueue.Enqueue(tempInstr1);
+            InstructionQueue.Enqueue(tempInstr2);
+
+            PrintlnWithVR("2 G00 Instructions added to get back home.");
+        }
     }
 
     #endregion
@@ -228,6 +343,14 @@ public class CNCController : MonoBehaviour
         return result;
     }
 
+    public void ClearInstrQueue()
+    {
+        InstructionQueue.Clear();
+        isFinishedTask = false;
+        isStartingTask = true;
+        PrintlnWithVR("Ongoing CNC commands cleared.");
+    }
+
     protected void PrintError(string errorMessage)
     {
         print(errorMessage + InstructionQueue.Peek().ToString());
@@ -244,7 +367,78 @@ public class CNCController : MonoBehaviour
 
     protected void PrintVector(Vector3 vector)
     {
-        print(string.Format("({0}, {1}, {2})", vector.x, vector.y, vector.z));
+        print(VectorToStringLong(vector));
+        if (DebugVR != null)
+            DebugVR.Println(VectorToStringLong(vector));
+    }
+
+    protected void PrintlnWithVR(string str)
+    {
+        print(str);
+        if (DebugVR != null)
+            DebugVR.Println(str);
+    }
+
+    protected string VectorToStringLong(Vector3 vector)
+    {
+        return string.Format("({0}, {1}, {2})", vector.x, vector.y, vector.z);
+    }
+
+    #endregion
+
+    #region Effects
+
+    protected void PlayMachineSound()
+    {
+        if (MachineSound != null)
+        {
+            if (!MachineSound.isPlaying)
+            {
+                MachineSound.Play();
+            }
+        }
+    }
+
+    protected void StopMachineSound()
+    {
+        MachineSound.Stop();
+    }
+
+    protected void PlayCuttingSound()
+    {
+        if (CuttingSound != null)
+        {
+            if (!CuttingSound.isPlaying)
+            {
+                CuttingSound.Play();
+            }
+        }
+    }
+
+    protected void StopCuttingSound()
+    {
+        CuttingSound.Stop();
+    }
+
+    protected void PlayParticlesFX()
+    {
+        if (Particles != null)
+        {
+            if (!Particles.isPlaying)
+            {
+                Particles.Play();
+            }
+        }
+    }
+
+    protected void StopParticlesFX()
+    {
+        Particles.Stop();
+    }
+
+    protected bool NeedsCuttingFX(int g)
+    {
+        return g == 1 || g == 2 || g == 3;
     }
 
     #endregion

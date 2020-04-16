@@ -7,6 +7,7 @@ public class CNCTranslator : MonoBehaviour
 {
     public CNCController Controller;
     public DebugConsole DebugVR;
+    [HideInInspector]
     public string[] commandList;
 
     private Queue<int> modalGroupQueue;
@@ -17,11 +18,11 @@ public class CNCTranslator : MonoBehaviour
     private bool isFirstCommand = true;
     private int gCode = 0;
     private int[] gCodeForEachGroup;
-    private float prefixModifier = 0.01f; // 1 for metre, 0.01 for centimetre
-    private float feedRate = 1500f;
-    private float spindleSpeed = 10000f;
-    private int tool = 1;
-    private int miscFunc = 0;
+    public float prefixModifier = 0.01f; // 1 for metre, 0.01 for centimetre
+    public float feedRate = 1500f;
+    public float spindleSpeed = 10000f;
+    public int tool = 1;
+    public int miscFunc = 0;
 
     // Group1 Motion
     private float posX = 0f, posY = 0f, posZ = 0f;

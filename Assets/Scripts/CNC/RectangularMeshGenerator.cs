@@ -18,6 +18,9 @@ public class RectangularMeshGenerator : MonoBehaviour
     public GameObject bladeTip;
     public int bladeLayer;
 
+    [HideInInspector]
+    public bool isActive;
+
     // Blade tip boundary marker should be placed at the center of the furthest tip of the blade: (indicated by *)
     //                |   |   |   |
     //                | blade |   |                  +y
@@ -68,6 +71,7 @@ public class RectangularMeshGenerator : MonoBehaviour
 
     private void Awake()
     {
+        isActive = true;
         mesh = new Mesh();
         meshRenderer = GetComponent<MeshRenderer>();
         meshCollider = GetComponent<MeshCollider>();
@@ -85,18 +89,21 @@ public class RectangularMeshGenerator : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        bladeTipRelPos = transform.InverseTransformPoint(bladeTip.transform.position);
-        if(IsBladeWithinPieceBound())
+        if (isActive)
         {
-            SetCuttingIndex();
-            float height = bladeTipRelPos.y;
-            ResizeMesh(height);
+            bladeTipRelPos = transform.InverseTransformPoint(bladeTip.transform.position);
+            if (IsBladeWithinPieceBound())
+            {
+                SetCuttingIndex();
+                float height = bladeTipRelPos.y;
+                ResizeMesh(height);
+            }
         }
     }
 
     private void OnDrawGizmos()
     {
-        if (Application.isPlaying)
+        if (Application.isPlaying && isActive)
         {
             Gizmos.color = Color.grey;
             Gizmos.DrawWireMesh(GetComponent<MeshFilter>().mesh, transform.position, transform.rotation, transform.lossyScale);
@@ -124,6 +131,26 @@ public class RectangularMeshGenerator : MonoBehaviour
                 }
             }*/
         }
+    }
+
+    /*public void FinishCutting()
+    {
+        isActive = false;
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        mesh.RecalculateTangents();
+        GetComponent<MeshFilter>().sharedMesh = mesh;
+
+        PostGenerateMesh();
+
+        GetComponent<Rigidbody>().isKinematic = false;
+        GetComponent<Rigidbody>().useGravity = true;
+    }*/
+
+    public void RePieceMesh()
+    {
+        GenerateMesh();
+        PostGenerateMesh();
     }
 
     private void InitVariables()

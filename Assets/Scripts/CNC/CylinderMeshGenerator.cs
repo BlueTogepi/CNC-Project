@@ -16,6 +16,9 @@ public class CylinderMeshGenerator : MonoBehaviour
     public GameObject bladeLeft;
     public GameObject bladeRight;
 
+    [HideInInspector]
+    public bool isActive;
+
     // Blade boundary markers should be placed on xy plane as seen from -z toward +z direction:
     //                | blade |                      +y
     //              Left-----Right                    ^   +z
@@ -60,6 +63,7 @@ public class CylinderMeshGenerator : MonoBehaviour
 
     private void Awake()
     {
+        isActive = true;
         mesh = new Mesh();
         meshRenderer = GetComponent<MeshRenderer>();
         meshCollider = GetComponent<MeshCollider>();
@@ -80,25 +84,48 @@ public class CylinderMeshGenerator : MonoBehaviour
 
     void FixedUpdate()
     {
-        bladeLeftRelPos = transform.InverseTransformPoint(bladeLeft.transform.position);
-        bladeRightRelPos = transform.InverseTransformPoint(bladeRight.transform.position);
-        if (IsBladeWithinBound())
+        if (isActive)
         {
-            int startInd = Mathf.Max(0, NearestLinearVerticesIndex(bladeLeftRelPos.x));
-            int stopInd = Mathf.Min(linearVertexSize, NearestLinearVerticesIndex(bladeRightRelPos.x)) + 1;
-            float radius = RadiusFromCenter(bladeLeftRelPos);
-            SetCuttingIndex(startInd, stopInd, radius);
-            ResizeMesh(radius);
+            bladeLeftRelPos = transform.InverseTransformPoint(bladeLeft.transform.position);
+            bladeRightRelPos = transform.InverseTransformPoint(bladeRight.transform.position);
+            if (IsBladeWithinBound())
+            {
+                int startInd = Mathf.Max(0, NearestLinearVerticesIndex(bladeLeftRelPos.x));
+                int stopInd = Mathf.Min(linearVertexSize, NearestLinearVerticesIndex(bladeRightRelPos.x)) + 1;
+                float radius = RadiusFromCenter(bladeLeftRelPos);
+                SetCuttingIndex(startInd, stopInd, radius);
+                ResizeMesh(radius);
+            }
         }
     }
 
     public void OnDrawGizmos()
     {
-        if (Application.isPlaying)
+        if (Application.isPlaying && isActive)
         {
             Gizmos.color = Color.grey;
             Gizmos.DrawWireMesh(GetComponent<MeshFilter>().mesh, transform.position, transform.rotation, transform.lossyScale);
         }
+    }
+
+    /*public void FinishCutting()
+    {
+        isActive = false;
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        mesh.RecalculateTangents();
+        GetComponent<MeshFilter>().sharedMesh = mesh;
+
+        PostGenerateMesh();
+
+        GetComponent<Rigidbody>().isKinematic = false;
+        GetComponent<Rigidbody>().useGravity = true;
+    }*/
+
+    public void RePieceMesh()
+    {
+        GenerateMesh();
+        PostGenerateMesh();
     }
 
     private void InitVariables()
