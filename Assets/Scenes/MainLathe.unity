@@ -2930,6 +2930,36 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7300733148442197785, guid: 0a68f2961dcfd954a8652add7d1c8713,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300733148442197785, guid: 0a68f2961dcfd954a8652add7d1c8713,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300733148442197785, guid: 0a68f2961dcfd954a8652add7d1c8713,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300733148442197785, guid: 0a68f2961dcfd954a8652add7d1c8713,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300733148442197785, guid: 0a68f2961dcfd954a8652add7d1c8713,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7300733148442197785, guid: 0a68f2961dcfd954a8652add7d1c8713,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -90
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a68f2961dcfd954a8652add7d1c8713, type: 3}
 --- !u!1001 &471073881
@@ -13476,6 +13506,7 @@ MonoBehaviour:
   InputObj: {fileID: 2736898511516986416}
   CNCT: {fileID: 1866652070}
   CNCC: {fileID: 1866652069}
+  Doors: {fileID: 0}
   DebugVR: {fileID: 2736898511630244792}
   Presets:
   - {fileID: 4900000, guid: beb122e8608f7854f969e71fe57cc0b3, type: 3}

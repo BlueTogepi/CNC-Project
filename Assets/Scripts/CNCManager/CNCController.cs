@@ -1,22 +1,30 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CNCController : MonoBehaviour
 {
-    public GameObject TargetKnife;                          // All knife transformation control in this script should not be relative to the piece (only CNC instructions are relative)
+    public GameObject TargetKnife;                          // All knife transformation control in this script should not be relative to the piece (only CNC instructions and checker are relative [shown in comments])
     public GameObject Piece;
     public GameObject PieceOrigin;
     public GameObject Home;
     public DebugConsole DebugVR;
     public float RapidMoveSpeed = 0.1f;
     public float FeedMoveSpeed = 0.01f;
+    public float LimitFeedRate = 0.1f;
     [Tooltip("Crude Threshold for Vector3 Equal Position Checking")]
     public float CrudeThreshold = 1e-4f;
     [Tooltip("Exact Threshold for Vector3 Equal Position Checking")]
     public float ExactThreshold = 1e-5f;
     [Tooltip("Allow spiral motion for G02 and G03 (Circular Motion with different radius)")]
     public bool AllowSpiral = false;
+    [Tooltip("Optional")]
+    public DoorScript Doors;
+    public bool isAlwaysTurnedOn = false;                      // For testing purpose
+    public bool isTurnedOn { get { return _isTurnedOn || isAlwaysTurnedOn; } set { _isTurnedOn = value; } }
+    private bool _isTurnedOn = false;
+    public bool isReady { get { return (Doors != null ? Doors.isDoorsClosed : true) && isTurnedOn; } }
     /*[Tooltip("Empty GameObject indicating position and rotation for finished piece placement")]
     public GameObject PieceFinishedPlacement;
     [Tooltip("This is just for generating a new piece in-game, any transform measurement should be done on 'Piece'")]
@@ -25,9 +33,17 @@ public class CNCController : MonoBehaviour
     public ParticleSystem Particles;
     public AudioSource MachineSound;
     public AudioSource CuttingSound;
+    public LightBulbScript SwitchLight;
+
+    [Header("Knife Limit Boundary (in CNC coordination)")]
+    public bool isLimitless = true;
+    public Vector3 LimitMin;
+    public Vector3 LimitMax;
 
     [HideInInspector]
-    public Queue<CNCInstruction> InstructionQueue;
+    public LinkedList<CNCInstruction> InstructionListIn;        // Before Checking
+    [HideInInspector]
+    private LinkedList<CNCInstruction> InstructionList;         // After Checking
 
     protected Vector3 PieceInitialPosition;
     protected Quaternion PieceInitialRotation;
@@ -50,7 +66,8 @@ public class CNCController : MonoBehaviour
 
     protected virtual void Awake()
     {
-        InstructionQueue = new Queue<CNCInstruction>();
+        InstructionListIn = new LinkedList<CNCInstruction>();
+        InstructionList = new LinkedList<CNCInstruction>();
     }
     
     protected virtual void Start()
@@ -70,50 +87,62 @@ public class CNCController : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (InstructionQueue.Count != 0)
+        if (InstructionListIn.Count != 0)
+        {
+            Vector3 homeRel = pieceOriginTransform.InverseTransformPoint(Home.transform.position);
+            CheckInstructionListIn(homeRel.x, homeRel.y, homeRel.z);
+        }
+
+        if (isTurnedOn)
         {
             PlayMachineSound();
-
-            CNCInstruction instr = InstructionQueue.Peek();
-            if (isStartingTask)
+            TurnOnLight();
+            if (InstructionList.Count != 0 && isReady)
             {
-                PrintInstruction();
-                if (NeedsCuttingFX(instr.G))
+                CNCInstruction instr = InstructionList.First.Value;
+                if (isStartingTask)
                 {
-                    PlayCuttingSound();
-                    PlayParticlesFX();
+                    PrintInstruction();
+                    if (NeedsCuttingFX(instr.G))
+                    {
+                        PlayCuttingSound();
+                        PlayParticlesFX();
+                    }
                 }
-            }
 
-            ReadInstruction(instr);
+                ReadInstruction(instr);
 
-            isStartingTask = false;
-            if (isFinishedTask)
-            {
-                InstructionQueue.Dequeue();
-                isFinishedTask = false;
-                isStartingTask = true;
-
-                if (InstructionQueue.Count != 0)
+                isStartingTask = false;
+                if (isFinishedTask)
                 {
-                    if (!NeedsCuttingFX(InstructionQueue.Peek().G))
+                    InstructionList.RemoveFirst();
+                    isFinishedTask = false;
+                    isStartingTask = true;
+
+                    if (InstructionList.Count != 0)
+                    {
+                        if (!NeedsCuttingFX(InstructionList.First.Value.G))
+                        {
+                            StopCuttingSound();
+                            StopParticlesFX();
+                        }
+                    }
+                    else
                     {
                         StopCuttingSound();
                         StopParticlesFX();
                     }
                 }
-                else
-                {
-                    StopCuttingSound();
-                    StopParticlesFX();
-                }
             }
-        }
-        else
+            else
+            {
+                StopCuttingSound();
+                StopParticlesFX();
+            }
+        } else
         {
             StopMachineSound();
-            StopCuttingSound();
-            StopParticlesFX();
+            TurnOffLight();
         }
     }
 
@@ -136,11 +165,90 @@ public class CNCController : MonoBehaviour
 
     #endregion
 
+    #region On/Off & Checking
+
+    public void ToggleOnOff()
+    {
+        if (_isTurnedOn)
+            isTurnedOn = false;
+        else
+            isTurnedOn = true;
+    }
+
+    // Checks all instruction in InstructionListIn and changes their container into InstructionList
+    // If any CNCInstruction is invalid in any form, this will break putting them into into InstructionList
+    // This method's coordinates are in CNC coordination
+    protected void CheckInstructionListIn(float startX, float startY, float startZ)
+    {
+        bool isValid = true;
+        int g;
+        float x_last, y_last, z_last;
+        float x_now, y_now, z_now;
+
+        x_last = startX; y_last = startY; z_last = startZ;
+
+        foreach (CNCInstruction instr in InstructionListIn)
+        {
+            if (instr.FeedRate * instr.prefixModifier > LimitFeedRate)
+            {
+                print(instr.FeedRate + " * " + instr.prefixModifier + " > " + LimitFeedRate);
+                isValid = false;
+                PrintlnWithVR("Feed Rate exceeds limit\n" + instr.ToStringShort());
+            }
+            g = instr.G;
+            switch (instr.Group)
+            {
+                case 1:
+                    CNCInstructionMotion instrG1 = (CNCInstructionMotion)instr;
+                    x_now = instrG1.posX;
+                    y_now = instrG1.posY;
+                    z_now = instrG1.posZ;
+                    if (!isValidBoundary(x_now, y_now, z_now))
+                    {
+                        isValid = false;
+                        PrintlnWithVR("Coordinate exceeds limit\n" + instrG1.ToStringShort());
+                    }
+                    if ((g == 2 || g == 3) && !AllowSpiral)
+                    {
+                        // Absolute I,J,K
+                        float i_ab = x_last + instrG1.posI;
+                        float j_ab = y_last + instrG1.posJ;
+                        float k_ab = z_last + instrG1.posK;
+                        float radius1 = Vector3.Distance(new Vector3(x_last, y_last, z_last), new Vector3(i_ab, j_ab, k_ab));
+                        float radius2 = Vector3.Distance(new Vector3(x_now, y_now, z_now), new Vector3(i_ab, j_ab, k_ab));
+                        if (!CheckRadiusMatched(radius1, radius2))
+                        {
+                            isValid = false;
+                            PrintlnWithVR("Radius error\n" + instrG1.ToStringShort());
+                        }
+                    }
+                    break;
+            }
+
+            if (!isValid)
+                break;
+            else
+                InstructionList.AddLast(instr);
+        }
+
+        if (!isValid)
+        {
+            ClearInstrQueue();
+        }
+        else
+        {
+            InstructionListIn.Clear();
+        }
+    }
+
+    #endregion
+
     #region Main
 
     protected void ReadInstruction(CNCInstruction instr)
     {
         gCode = instr.G;
+        FeedMoveSpeed = instr.FeedRate * instr.prefixModifier;
         switch (instr.Group)
         {
             case 1:
@@ -217,14 +325,14 @@ public class CNCController : MonoBehaviour
 
     public virtual void GetBackHome()
     {
-        if (InstructionQueue.Count == 0)
+        if (InstructionList.Count == 0)
         {
             CNCInstructionMotion tempInstr1 = new CNCInstructionMotion
             {
                 G = 0,
                 Group = 1,
                 prefixModifier = 0.001f,
-                FeedRate = 0,
+                FeedRate = 0.01f,
                 SpindleSpeed = 0,
                 Tool = 1,
                 MiscFunc = 0
@@ -238,7 +346,7 @@ public class CNCController : MonoBehaviour
                 G = 0,
                 Group = 1,
                 prefixModifier = 0.001f,
-                FeedRate = 0,
+                FeedRate = 0.01f,
                 SpindleSpeed = 0,
                 Tool = 1,
                 MiscFunc = 0
@@ -247,8 +355,8 @@ public class CNCController : MonoBehaviour
             tempInstr2.TargetPos = new Vector3(tempPos2.x, tempPos2.y, tempPos2.z);
             tempInstr2.PivotRelPos = Vector3.zero;
 
-            InstructionQueue.Enqueue(tempInstr1);
-            InstructionQueue.Enqueue(tempInstr2);
+            InstructionList.AddLast(tempInstr1);
+            InstructionList.AddLast(tempInstr2);
 
             PrintlnWithVR("2 G00 Instructions added to get back home.");
         }
@@ -345,7 +453,8 @@ public class CNCController : MonoBehaviour
 
     public void ClearInstrQueue()
     {
-        InstructionQueue.Clear();
+        InstructionListIn.Clear();
+        InstructionList.Clear();
         isFinishedTask = false;
         isStartingTask = true;
         PrintlnWithVR("Ongoing CNC commands cleared.");
@@ -353,16 +462,16 @@ public class CNCController : MonoBehaviour
 
     protected void PrintError(string errorMessage)
     {
-        print(errorMessage + InstructionQueue.Peek().ToString());
+        print(errorMessage + InstructionList.First.Value.ToString());
         if (DebugVR != null)
-            DebugVR.Println(errorMessage + InstructionQueue.Peek().ToStringShort());
+            DebugVR.Println(errorMessage + InstructionList.First.Value.ToStringShort()); ;
     }
 
     protected void PrintInstruction()
     {
-        print(InstructionQueue.Peek());
+        print(InstructionList.First.Value);
         if (DebugVR != null)
-            DebugVR.Println(InstructionQueue.Peek().ToStringShort());
+            DebugVR.Println(InstructionList.First.Value.ToStringShort());
     }
 
     protected void PrintVector(Vector3 vector)
@@ -401,7 +510,10 @@ public class CNCController : MonoBehaviour
 
     protected void StopMachineSound()
     {
-        MachineSound.Stop();
+        if (MachineSound != null)
+        {
+            MachineSound.Stop();
+        }
     }
 
     protected void PlayCuttingSound()
@@ -417,7 +529,10 @@ public class CNCController : MonoBehaviour
 
     protected void StopCuttingSound()
     {
-        CuttingSound.Stop();
+        if (CuttingSound != null)
+        {
+            CuttingSound.Stop();
+        }
     }
 
     protected void PlayParticlesFX()
@@ -433,12 +548,31 @@ public class CNCController : MonoBehaviour
 
     protected void StopParticlesFX()
     {
-        Particles.Stop();
+        if (Particles != null)
+        {
+            Particles.Stop();
+        }
     }
 
     protected bool NeedsCuttingFX(int g)
     {
         return g == 1 || g == 2 || g == 3;
+    }
+
+    protected void TurnOnLight()
+    {
+        if (SwitchLight != null)
+        {
+            SwitchLight.TurnOn();
+        }
+    }
+
+    protected void TurnOffLight()
+    {
+        if (SwitchLight != null)
+        {
+            SwitchLight.TurnOff();
+        }
     }
 
     #endregion
@@ -482,6 +616,21 @@ public class CNCController : MonoBehaviour
     protected virtual void TranslateToNewPos(Vector3 newPos)
     {
         TargetKnife.transform.position = newPos;
+    }
+
+    // This method's coordinates are in CNC coordination
+    protected virtual bool isValidBoundary(float x, float y, float z)
+    {
+        if (isLimitless)
+        {
+            return true;
+        }
+        else
+        {
+            return LimitMin.x <= x && x <= LimitMax.x
+                && LimitMin.y <= y && y <= LimitMax.y
+                && LimitMin.z <= z && z <= LimitMax.z;
+        }
     }
 
     #endregion

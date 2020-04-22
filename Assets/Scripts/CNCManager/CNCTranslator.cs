@@ -5,13 +5,14 @@ using UnityEngine;
 
 public class CNCTranslator : MonoBehaviour
 {
+    [Tooltip("Might also put in an instruction checker in this slot instead")]
     public CNCController Controller;
     public DebugConsole DebugVR;
     [HideInInspector]
     public string[] commandList;
 
     private Queue<int> modalGroupQueue;
-    private Queue<CNCInstruction> TargetInstrQueue;
+    private LinkedList<CNCInstruction> TargetInstrList;
 
     // Setup for CNCInstruction Class for each command
     private int line = 0;
@@ -19,8 +20,8 @@ public class CNCTranslator : MonoBehaviour
     private int gCode = 0;
     private int[] gCodeForEachGroup;
     public float prefixModifier = 0.01f; // 1 for metre, 0.01 for centimetre
-    public float feedRate = 1500f;
-    public float spindleSpeed = 10000f;
+    public float feedRate = 10f;
+    public float spindleSpeed = 200f;
     public int tool = 1;
     public int miscFunc = 0;
 
@@ -36,7 +37,7 @@ public class CNCTranslator : MonoBehaviour
         modalGroupQueue = new Queue<int>();
         gCodeForEachGroup = new int[] { -1, 0, 17, 90, -1, 93, 21, 40, 43, -1, 98, -1, 54 };
 
-        TargetInstrQueue = Controller.InstructionQueue;
+        TargetInstrList = Controller.InstructionListIn;
     }
 
     public void TranslateCommand(String inputCommandString)
@@ -170,7 +171,7 @@ public class CNCTranslator : MonoBehaviour
                 break;
         }
 
-        TargetInstrQueue.Enqueue(instr);
+        TargetInstrList.AddLast(instr);
     }
 
     private void ResetNonModal()

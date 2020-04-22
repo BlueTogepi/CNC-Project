@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -96,5 +97,15 @@ public class UIManager : MonoBehaviour
     public void DoorAction()
     {
         Doors.Action();
+    }
+
+    public void ToggleOnOffMachine()
+    {
+        CNCC.ToggleOnOff();
+    }
+
+    public void LoadScene(int sceneBuildIndex)
+    {
+        SceneManager.LoadScene(sceneBuildIndex);
     }
 }

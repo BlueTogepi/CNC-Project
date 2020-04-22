@@ -14,6 +14,8 @@ public class DoorScript : MonoBehaviour
     public Vector3 RightClosed;
     public Vector3 RightOpened;
 
+    public bool isDoorsClosed { get; private set; }
+
     private bool isOpened;
     private bool isMoving;
     private float maxDist;
@@ -25,6 +27,7 @@ public class DoorScript : MonoBehaviour
         isMoving = false;
         DoorLeft.transform.localPosition = LeftClosed;
         DoorRight.transform.localPosition = RightClosed;
+        isDoorsClosed = true;
         maxDist = DoorSpeed * Time.deltaTime;
     }
 
@@ -35,8 +38,8 @@ public class DoorScript : MonoBehaviour
         {
             if (isOpened)       // Closing Transition
             {
-                DoorLeft.transform.localPosition = Vector3.MoveTowards(LeftOpened, LeftClosed, maxDist);
-                DoorRight.transform.localPosition = Vector3.MoveTowards(RightOpened, RightClosed, maxDist);
+                DoorLeft.transform.localPosition = Vector3.MoveTowards(DoorLeft.transform.localPosition, LeftClosed, maxDist);
+                DoorRight.transform.localPosition = Vector3.MoveTowards(DoorRight.transform.localPosition, RightClosed, maxDist);
 
                 if (DoorLeft.transform.localPosition == LeftClosed && DoorRight.transform.localPosition == RightClosed)
                 {
@@ -48,8 +51,8 @@ public class DoorScript : MonoBehaviour
             }
             else                // Opening Transition
             {
-                DoorLeft.transform.localPosition = Vector3.MoveTowards(LeftClosed, LeftOpened, maxDist);
-                DoorRight.transform.localPosition = Vector3.MoveTowards(RightClosed, RightOpened, maxDist);
+                DoorLeft.transform.localPosition = Vector3.MoveTowards(DoorLeft.transform.localPosition, LeftOpened, maxDist);
+                DoorRight.transform.localPosition = Vector3.MoveTowards(DoorRight.transform.localPosition, RightOpened, maxDist);
 
                 if (DoorLeft.transform.localPosition == LeftOpened && DoorRight.transform.localPosition == RightOpened)
                 {
@@ -59,6 +62,12 @@ public class DoorScript : MonoBehaviour
                     isMoving = false;
                 }
             }
+        } else if (DoorLeft.transform.localPosition == LeftClosed && DoorRight.transform.localPosition == RightClosed)
+        {
+            isDoorsClosed = true;
+        } else
+        {
+            isDoorsClosed = false;
         }
     }
 
