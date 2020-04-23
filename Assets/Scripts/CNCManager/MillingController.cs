@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MillingController : CNCController
 {
+    [Header("MillingController")]
+    public RectangularMeshGenerator RectangularPiece;
     protected override void Awake()
     {
         base.Awake();
@@ -21,7 +23,7 @@ public class MillingController : CNCController
 
     public override void RePiece()
     {
-        Piece.GetComponent<RectangularMeshGenerator>().RePieceMesh();
+        RectangularPiece.RePieceMesh();
         PrintlnWithVR("Piece Mesh Regenerated.");
     }
 

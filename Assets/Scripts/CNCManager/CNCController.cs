@@ -23,7 +23,7 @@ public class CNCController : MonoBehaviour
     public DoorScript Doors;
     public bool isAlwaysTurnedOn = false;                      // For testing purpose
     public bool isTurnedOn { get { return _isTurnedOn || isAlwaysTurnedOn; } set { _isTurnedOn = value; } }
-    private bool _isTurnedOn = false;
+    protected bool _isTurnedOn = false;
     public bool isReady { get { return (Doors != null ? Doors.isDoorsClosed : true) && isTurnedOn; } }
     /*[Tooltip("Empty GameObject indicating position and rotation for finished piece placement")]
     public GameObject PieceFinishedPlacement;
@@ -43,7 +43,7 @@ public class CNCController : MonoBehaviour
     [HideInInspector]
     public LinkedList<CNCInstruction> InstructionListIn;        // Before Checking
     [HideInInspector]
-    private LinkedList<CNCInstruction> InstructionList;         // After Checking
+    protected LinkedList<CNCInstruction> InstructionList;         // After Checking
 
     protected Vector3 PieceInitialPosition;
     protected Quaternion PieceInitialRotation;
@@ -222,6 +222,9 @@ public class CNCController : MonoBehaviour
                             PrintlnWithVR("Radius error\n" + instrG1.ToStringShort());
                         }
                     }
+                    x_last = x_now;
+                    y_last = y_now;
+                    z_last = z_now;
                     break;
             }
 
@@ -332,7 +335,7 @@ public class CNCController : MonoBehaviour
                 G = 0,
                 Group = 1,
                 prefixModifier = 0.001f,
-                FeedRate = 0.01f,
+                FeedRate = 10f,
                 SpindleSpeed = 0,
                 Tool = 1,
                 MiscFunc = 0
@@ -346,7 +349,7 @@ public class CNCController : MonoBehaviour
                 G = 0,
                 Group = 1,
                 prefixModifier = 0.001f,
-                FeedRate = 0.01f,
+                FeedRate = 10f,
                 SpindleSpeed = 0,
                 Tool = 1,
                 MiscFunc = 0

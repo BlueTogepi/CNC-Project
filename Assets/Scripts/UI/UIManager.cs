@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviour
         DebugVR.ClearDebug();
     }
 
-    public void HaultCommands()
+    public void HaltCommands()
     {
         CNCC.ClearInstrQueue();
     }

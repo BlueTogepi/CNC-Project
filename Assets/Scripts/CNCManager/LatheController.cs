@@ -52,7 +52,46 @@ public class LatheController : CNCController
         PrintlnWithVR("Piece Mesh Regenerated.");
     }
 
-    protected override void InitializeG02_03(CNCInstructionMotion instr)
+    public override void GetBackHome()
+    {
+        if (InstructionList.Count == 0)
+        {
+            CNCInstructionMotion tempInstr1 = new CNCInstructionMotion
+            {
+                G = 0,
+                Group = 1,
+                prefixModifier = 0.001f,
+                FeedRate = 10f,
+                SpindleSpeed = 0,
+                Tool = 1,
+                MiscFunc = 0
+            };
+            Vector3 tempPos1 = PieceOrigin.transform.InverseTransformPoint(new Vector3(TargetKnife.transform.position.x, TargetKnife.transform.position.y, Home.transform.position.z)) * 1000f;
+            tempInstr1.TargetPos = new Vector3(tempPos1.x, tempPos1.y, tempPos1.z);
+            tempInstr1.PivotRelPos = Vector3.zero;
+
+            CNCInstructionMotion tempInstr2 = new CNCInstructionMotion
+            {
+                G = 0,
+                Group = 1,
+                prefixModifier = 0.001f,
+                FeedRate = 10f,
+                SpindleSpeed = 0,
+                Tool = 1,
+                MiscFunc = 0
+            };
+            Vector3 tempPos2 = PieceOrigin.transform.InverseTransformPoint(new Vector3(Home.transform.position.x, Home.transform.position.y, Home.transform.position.z)) * 1000f;
+            tempInstr2.TargetPos = new Vector3(tempPos2.x, tempPos2.y, tempPos2.z);
+            tempInstr2.PivotRelPos = Vector3.zero;
+
+            InstructionList.AddLast(tempInstr1);
+            InstructionList.AddLast(tempInstr2);
+
+            PrintlnWithVR("2 G00 Instructions added to get back home.");
+        }
+    }
+
+    /*protected override void InitializeG02_03(CNCInstructionMotion instr)
     {
         pivot = pieceOriginTransform.TransformDirection(Vector3.Scale(instr.PivotRelPos, scaleVector)) + TargetKnife.transform.position;
         axis = AxisForRotation(TargetKnife.transform.position, target, pivot);
@@ -81,5 +120,5 @@ public class LatheController : CNCController
             axis *= -1;
             angleDiff = Clamp0360(-angleDiff);
         }
-    }
+    }*/
 }

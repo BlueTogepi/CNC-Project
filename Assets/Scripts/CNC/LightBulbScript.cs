@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class LightBulbScript : MonoBehaviour
 {
+    public Color ColorOn = new Color(255, 0, 0);
+    public Color ColorOff = new Color(10, 8, 8);
     [HideInInspector]
     public bool isOn = false;
 
@@ -16,14 +18,20 @@ public class LightBulbScript : MonoBehaviour
 
     public void TurnOn()
     {
-        isOn = true;
-        BulbMaterial.EnableKeyword("_EMISSION");
+        if (!isOn)
+        {
+            isOn = true;
+            BulbMaterial.SetColor("_Color", ColorOn);
+        }
     }
 
     public void TurnOff()
     {
-        isOn = false;
-        BulbMaterial.DisableKeyword("_EMISSION");
+        if (isOn)
+        {
+            isOn = false;
+            BulbMaterial.SetColor("_Color", ColorOff);
+        }
     }
 
     public void ToggleOnOff()

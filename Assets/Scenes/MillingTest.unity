@@ -607,7 +607,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputObj: {fileID: 1346827780}
   CNCT: {fileID: 738433498}
-  CNCC: {fileID: 0}
+  CNCC: {fileID: 738433501}
   Doors: {fileID: 738433502}
   DebugVR: {fileID: 0}
   Presets: []
@@ -654,7 +654,7 @@ MonoBehaviour:
   Particles: {fileID: 0}
   MachineSound: {fileID: 0}
   CuttingSound: {fileID: 0}
-  SwitchLight: {fileID: 0}
+  SwitchLight: {fileID: 1929488896}
   isLimitless: 1
   LimitMin: {x: 0, y: 0, z: 0}
   LimitMax: {x: 0, y: 0, z: 0}
@@ -867,6 +867,75 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Movespeed: 1
   Rotatespeed: 10
+--- !u!1001 &908170694
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.62
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505406, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4902588987738505410, guid: 797bf4e1080b7294a90c50038bb03df6,
+        type: 3}
+      propertyPath: m_Name
+      value: LightBulb
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 797bf4e1080b7294a90c50038bb03df6, type: 3}
 --- !u!1 &952985535
 GameObject:
   m_ObjectHideFlags: 0
@@ -1499,6 +1568,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1929488896 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4902588987738505405, guid: 797bf4e1080b7294a90c50038bb03df6,
+    type: 3}
+  m_PrefabInstance: {fileID: 908170694}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e3d3949c6cefa64a8521a70b84140f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2109037076
