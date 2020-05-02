@@ -252,6 +252,8 @@ public class CNCController : MonoBehaviour
     {
         gCode = instr.G;
         FeedMoveSpeed = instr.FeedRate * instr.prefixModifier;
+        maxDistanceRapid = RapidMoveSpeed * Time.deltaTime;
+        maxDistanceFeed = FeedMoveSpeed * Time.deltaTime;
         switch (instr.Group)
         {
             case 1:
@@ -488,7 +490,10 @@ public class CNCController : MonoBehaviour
     {
         print(str);
         if (DebugVR != null)
+        {
             DebugVR.Println(str);
+            DebugVR.Alert(str);
+        }
     }
 
     protected string VectorToStringLong(Vector3 vector)

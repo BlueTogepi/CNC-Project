@@ -3155,7 +3155,7 @@ PrefabInstance:
     - target: {fileID: 184400062666965192, guid: 0a68f2961dcfd954a8652add7d1c8713,
         type: 3}
       propertyPath: initialLength
-      value: 0.6
+      value: 0.64
       objectReference: {fileID: 0}
     - target: {fileID: 184400062666965193, guid: 0a68f2961dcfd954a8652add7d1c8713,
         type: 3}
@@ -10365,7 +10365,7 @@ MonoBehaviour:
     600mm\n\tRadius: 75mm\nCutting Tool Size:\n\tWidth: 50mm\nPiece Boundary:\n\tX-75
     to X75\n\tY-75 to Y75\n\tZ0 to Z600\nKnife Limit Boundary:\n\tX-200 to X500\n\tY0
     to Y150\n\tZ0 to Z1000\nHome Default:\n\tX100, Y0, Z300\n\nInitial Speed:\n\tRapid:
-    100 mm/s\n\tFeed: 10 mm/s\n\nG02 & G03 Constraints:\n   - Only I J K\n   - R is
+    100 mm/s\n\tFeed: 10 mm/s\n\nG02 & G03 Constraints:\n   - Only I K\n   - R is
     not implemented\n   - Spiral Motion not allowed"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10435,10 +10435,10 @@ MonoBehaviour:
   m_margin: {x: 10, y: 5, z: -0.93662727, w: 0}
   m_textInfo:
     textComponent: {fileID: 1696763152}
-    characterCount: 411
+    characterCount: 409
     spriteCount: 0
-    spaceCount: 94
-    wordCount: 72
+    spaceCount: 93
+    wordCount: 71
     linkCount: 0
     lineCount: 28
     pageCount: 1
@@ -14769,7 +14769,7 @@ MonoBehaviour:
   DebugVR: {fileID: 2736898511630244792}
   Presets:
   - {fileID: 4900000, guid: 07d4ce3b8148ee848b588a215c19d63f, type: 3}
-  - {fileID: 4900000, guid: 72aa29408b655af45beb054ac78d8024, type: 3}
+  - {fileID: 4900000, guid: fbe2415aae32d6d44aab4f2a41854f1f, type: 3}
   inputString: 
 --- !u!114 &2736898511630244792
 MonoBehaviour:
@@ -14784,6 +14784,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugText: {fileID: 2736898511699894603}
+  AlertBoxPrefab: {fileID: 0}
+  TargetAlertBoxTransform: {fileID: 0}
+  EventCamera: {fileID: 0}
+  Pointer: {fileID: 0}
 --- !u!4 &2736898511630244793
 Transform:
   m_ObjectHideFlags: 0

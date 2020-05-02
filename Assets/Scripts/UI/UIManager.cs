@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Reflection;
 
 public class UIManager : MonoBehaviour
 {
@@ -108,4 +109,5 @@ public class UIManager : MonoBehaviour
     {
         SceneManager.LoadScene(sceneBuildIndex);
     }
+
 }
