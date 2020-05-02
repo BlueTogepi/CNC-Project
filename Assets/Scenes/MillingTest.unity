@@ -618,8 +618,6 @@ MonoBehaviour:
   CNCC: {fileID: 738433501}
   Doors: {fileID: 0}
   DebugVR: {fileID: 0}
-  AlertBoxPrefab: {fileID: 506416456831249234, guid: 7aab4fbfd4213504bbb397e8291e859c,
-    type: 3}
   Presets: []
   inputString: 
 --- !u!4 &738433500
@@ -845,12 +843,12 @@ PrefabInstance:
     - target: {fileID: 2071881205088835006, guid: 7e2b1a3f8e892b5489431fe7bc291657,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Alert
+      value: Backspace2InputField
       objectReference: {fileID: 0}
     - target: {fileID: 2071881205088835006, guid: 7e2b1a3f8e892b5489431fe7bc291657,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2071881205088835006, guid: 7e2b1a3f8e892b5489431fe7bc291657,
         type: 3}
@@ -915,7 +913,7 @@ PrefabInstance:
     - target: {fileID: 2071881205839056751, guid: 7e2b1a3f8e892b5489431fe7bc291657,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 5
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2071881205839056751, guid: 7e2b1a3f8e892b5489431fe7bc291657,
         type: 3}
@@ -940,7 +938,7 @@ PrefabInstance:
     - target: {fileID: 2071881205839056751, guid: 7e2b1a3f8e892b5489431fe7bc291657,
         type: 3}
       propertyPath: m_text
-      value: Alert
+      value: Backspace
       objectReference: {fileID: 0}
     - target: {fileID: 2071881206139136039, guid: 7e2b1a3f8e892b5489431fe7bc291657,
         type: 3}

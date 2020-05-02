@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Reflection;
+using System.Linq;
 
 public class UIManager : MonoBehaviour
 {
@@ -54,6 +55,10 @@ public class UIManager : MonoBehaviour
     public void Backspace2InputField()
     {
         InputObj.text = InputObj.text.Remove(InputObj.text.Length - 1);
+        if (InputObj.text[InputObj.text.Length - 1] == ' ')
+        {
+            Backspace2InputField();
+        }
     }
 
     /*public void FinishPiece()

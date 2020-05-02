@@ -52,7 +52,12 @@ public class CNCTranslator : MonoBehaviour
     {
         foreach (string commandLine in commandList)
         {
-            foreach (string cmd in commandLine.Split(new char[] { ' ' }))
+            String[] cmds = commandLine.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+            if (cmds.Length == 0)
+            {
+                continue;
+            }
+            foreach (string cmd in cmds)
             {
                 ReadCommand(cmd);
             }
@@ -71,6 +76,10 @@ public class CNCTranslator : MonoBehaviour
 
     private void ReadCommand(string cmd)
     {
+        if (cmd.Length == 0)
+        {
+            return;
+        }
         switch (cmd[0])
         {
             case 'N':
